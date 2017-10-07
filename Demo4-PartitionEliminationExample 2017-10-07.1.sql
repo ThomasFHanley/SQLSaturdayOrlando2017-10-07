@@ -24,8 +24,9 @@ DBCC FREEPROCCACHE;
 -- *******************************
 
 -- *******************************
-RAISERROR('Querying our partitioned table', 0, 1) WITH NOWAIT
+RAISERROR('Querying our partitioned table for the 50,000 count range', 0, 1) WITH NOWAIT
 RAISERROR('Run looking at the Execution Plan to see the # of partitions interrogated (Actual Partition Count)', 0, 1) WITH NOWAIT
+RAISERROR('Note that the ACTUAL EXECUTION PLAN is looking at 6 partitions... DATA TYPES COUNT!!!', 0, 1) WITH NOWAIT
 -- *******************************
 
 SET STATISTICS IO ON
@@ -33,8 +34,8 @@ SET STATISTICS TIME ON
 
 SELECT		COUNT(*)
 FROM		dbo.OrdersDaily
-WHERE		OrderDate > '2017-09-19 00:00:00.000'
-			AND OrderDate < '2017-09-20 00:00:00.000'
+WHERE		OrderDate > DATEADD(dd, DATEDIFF(dd, 0, getdate()), 1)
+			AND OrderDate < DATEADD(dd, DATEDIFF(dd, 0, getdate()), 2)
 			--AND OrderId % 2 = 0	-- Look for even Order IDs
 
 SET STATISTICS IO OFF
@@ -54,6 +55,7 @@ DBCC FREEPROCCACHE;
 -- *******************************
 RAISERROR('Querying our partitioned table - DATA TYPES MATTER! / the BASICS still apply', 0, 1) WITH NOWAIT
 RAISERROR('Run looking at the Execution Plan to see the # of partitions interrogated (Actual Partition Count)', 0, 1) WITH NOWAIT
+RAISERROR('Note that the ACTUAL EXECUTION PLAN is looking at 2 partitions and the execution plan is simpler... DATA TYPES COUNT and we just witnessed partition elimination!!!', 0, 1) WITH NOWAIT
 -- *******************************
 
 SET STATISTICS IO ON
@@ -61,8 +63,8 @@ SET STATISTICS TIME ON
 
 SELECT		COUNT(*)
 FROM		dbo.OrdersDaily
-WHERE		OrderDate > CAST('2017-09-19' AS DATETIME2(0))
-			AND OrderDate < CAST('2017-09-20' AS DATETIME2(0))
+WHERE		OrderDate > CAST(DATEADD(dd, DATEDIFF(dd, 0, getdate()), 1) AS DATE)
+			AND OrderDate < CAST(DATEADD(dd, DATEDIFF(dd, 0, getdate()), 2) AS DATE)
 			--AND OrderId % 2 = 0
 			
 --AND OrderId BETWEEN 1500000 AND 2500000

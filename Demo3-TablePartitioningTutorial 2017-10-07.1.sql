@@ -218,9 +218,7 @@ FROM sys.partition_range_values AS RV
 WHERE PF.[name] = 'DailyPF'
 
 /*
-1	|	2
-1	|	2	|	3
-1	|	2	|	3	|	4
+Partition 1 = Dawn of time |	P2 = Today - 3 days ago	|	P3 = Today - 2 days ago	|	P4 = Today - 1 day ago	|	P5 = Today	|	P6 = Tomorrow until the sun burns out
 */
 
 
@@ -293,13 +291,16 @@ GO
 -- *********************************************************
 RAISERROR('You can use the $PARTITION function to see where data would fall', 0, 1) WITH NOWAIT
 -- *********************************************************
-SELECT $PARTITION.DailyPF( DATEADD(dd,-100,CAST(SYSDATETIME() AS DATETIME2(0)))) AS PartitionNumber100DaysAgo,
-	$PARTITION.DailyPF( DATEADD(dd,-7,CAST(SYSDATETIME() AS DATETIME2(0)))) AS PartitionNumberSevenDaysAgo,
-	$PARTITION.DailyPF( DATEADD(dd,-3,CAST(SYSDATETIME() AS DATETIME2(0)))) AS PartitionNumberThreeDaysAgo,
-	$PARTITION.DailyPF( DATEADD(dd,-2,CAST(SYSDATETIME() AS DATETIME2(0)))) AS PartitionNumberTwoDaysAgo,
-	$PARTITION.DailyPF( DATEADD(dd,1,CAST(SYSDATETIME() AS DATETIME2(0)))) AS PartitionNumberTomorrow,
-	$PARTITION.DailyPF( DATEADD(dd,7,CAST(SYSDATETIME() AS DATETIME2(0)))) AS PartitionNumberNextWeek
+SELECT $PARTITION.DailyPF( DATEADD(dd,-100,CAST(SYSDATETIME() AS DATE))) AS PartitionNumber100DaysAgo,
+	$PARTITION.DailyPF( DATEADD(dd,-7,CAST(SYSDATETIME() AS DATE))) AS PartitionNumberSevenDaysAgo,
+	$PARTITION.DailyPF( DATEADD(dd,-3,CAST(SYSDATETIME() AS DATE))) AS PartitionNumberThreeDaysAgo,
+	$PARTITION.DailyPF( DATEADD(dd,-2,CAST(SYSDATETIME() AS DATE))) AS PartitionNumberTwoDaysAgo,
+	$PARTITION.DailyPF( DATEADD(dd,1,CAST(SYSDATETIME() AS DATE))) AS PartitionNumberTomorrow,
+	$PARTITION.DailyPF( DATEADD(dd,7,CAST(SYSDATETIME() AS DATE))) AS PartitionNumberNextWeek
 GO
+
+PRINT DATEADD(dd,-3,CAST(SYSDATETIME() AS DATE))
+
 
 
 RAISERROR('Breakpoint!',20,1) WITH LOG;
